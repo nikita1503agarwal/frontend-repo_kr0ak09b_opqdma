@@ -1,32 +1,19 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-let SplineComp = null
-try {
-  // Safe-guard dynamic require so it doesn't break rendering if WebGL or module fails
-  // Will be assigned in useEffect on client as well
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  SplineComp = (await import('@splinetool/react-spline')).default
-} catch (_) {
-  // ignore - we'll lazy load on client
-}
-
 function Hero() {
-  const [ready, setReady] = useState(false)
-  const [Spline, setSpline] = useState(() => SplineComp)
+  const [Spline, setSpline] = useState(null)
 
   useEffect(() => {
     let mounted = true
-    setReady(true)
-    if (!SplineComp) {
-      import('@splinetool/react-spline')
-        .then((mod) => {
-          if (mounted) setSpline(() => mod.default)
-        })
-        .catch(() => {
-          // keep without 3D background
-        })
-    }
+    // Dynamically import Spline on client to avoid SSR/WebGL issues
+    import('@splinetool/react-spline')
+      .then((mod) => {
+        if (mounted) setSpline(() => mod.default)
+      })
+      .catch(() => {
+        // If it fails, we simply keep the fallback background
+      })
     return () => {
       mounted = false
     }
@@ -35,7 +22,7 @@ function Hero() {
   return (
     <section className="relative min-h-[90vh] overflow-hidden">
       <div className="absolute inset-0">
-        {ready && Spline ? (
+        {Spline ? (
           <Spline scene="https://prod.spline.design/N8g2VNcx8Rycz93J/scene.splinecode" style={{ width: '100%', height: '100%' }} />
         ) : (
           <div className="h-full w-full bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.12),transparent_60%)]" />

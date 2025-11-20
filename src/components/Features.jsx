@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
-import { Cube, Orbit, Layers3, Zap } from 'lucide-react'
+import { Box, Orbit, Layers3, Zap } from 'lucide-react'
 
 const features = [
   {
     title: 'Custom 3D Objects',
     desc: 'Tailor-made 3D models that match your brand and product aesthetics.',
-    icon: Cube,
+    icon: Box,
   },
   {
     title: 'Interactive Scenes',
